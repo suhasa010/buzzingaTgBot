@@ -65,11 +65,8 @@ logging.getLogger("telegram").setLevel(logging.WARNING)
 
 # ================= CONFIG =================
 BOT_TOKEN = os.environ["BOT_TOKEN"]
+ADMIN_IDS = os.environ["ADMIN_IDS"]
 
-ADMIN_IDS = {
-    15024063,
-    674577674,
-}
 
 PHOTO_FINISH_THRESHOLD = 1.0  # seconds
 BUZZ_COOLDOWN = 0.3            # seconds
