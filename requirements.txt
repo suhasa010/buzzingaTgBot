@@ -1,3 +1,4 @@
+dotenv
 python-telegram-bot[job-queue]==22.6
 apscheduler>=3.10.4
 tzlocal>=3.0
