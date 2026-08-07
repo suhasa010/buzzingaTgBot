@@ -112,7 +112,7 @@ def keyboard(locked: bool):
     return InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(BUZZ_BUTTON, callback_data="buzz")],
-            [InlineKeyboardButton("Finish game", callback_data="finish")],
+            # [InlineKeyboardButton("Finish game", callback_data="finish")],
         ]
     )
 
@@ -151,35 +151,113 @@ def points_keyboard(user_id):
     # Compact grid layout (4 columns x 5 rows), then back button
     buttons = [
         [
-            InlineKeyboardButton("+100", callback_data=f"score_points_{user_id}_100"),
-            InlineKeyboardButton("-100", callback_data=f"score_points_{user_id}_-100"),
-            InlineKeyboardButton("+200", callback_data=f"score_points_{user_id}_200"),
-            InlineKeyboardButton("-200", callback_data=f"score_points_{user_id}_-200"),
-        ],
-        [
-            InlineKeyboardButton("+200", callback_data=f"score_points_{user_id}_200"),
-            InlineKeyboardButton("-200", callback_data=f"score_points_{user_id}_-200"),
-            InlineKeyboardButton("+400", callback_data=f"score_points_{user_id}_400"),
-            InlineKeyboardButton("-400", callback_data=f"score_points_{user_id}_-400"),
-        ],
-        [
-            InlineKeyboardButton("+300", callback_data=f"score_points_{user_id}_300"),
-            InlineKeyboardButton("-300", callback_data=f"score_points_{user_id}_-300"),
-            InlineKeyboardButton("+600", callback_data=f"score_points_{user_id}_600"),
-            InlineKeyboardButton("-600", callback_data=f"score_points_{user_id}_-600"),
-        ],
-        [
-            InlineKeyboardButton("+400", callback_data=f"score_points_{user_id}_400"),
-            InlineKeyboardButton("-400", callback_data=f"score_points_{user_id}_-400"),
-            InlineKeyboardButton("+800", callback_data=f"score_points_{user_id}_800"),
-            InlineKeyboardButton("-800", callback_data=f"score_points_{user_id}_-800"),
-        ],
-        [
-            InlineKeyboardButton("+500", callback_data=f"score_points_{user_id}_500"),
-            InlineKeyboardButton("-500", callback_data=f"score_points_{user_id}_-500"),
-            InlineKeyboardButton("+1000", callback_data=f"score_points_{user_id}_1000"),
             InlineKeyboardButton(
-                "-1000", callback_data=f"score_points_{user_id}_-1000"
+                "+100",
+                callback_data=f"score_points_{user_id}_100",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-100",
+                callback_data=f"score_points_{user_id}_-100",
+                style="danger",
+            ),
+            InlineKeyboardButton(
+                "+200",
+                callback_data=f"score_points_{user_id}_200",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-200",
+                callback_data=f"score_points_{user_id}_-200",
+                style="danger",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                "+200",
+                callback_data=f"score_points_{user_id}_200",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-200",
+                callback_data=f"score_points_{user_id}_-200",
+                style="danger",
+            ),
+            InlineKeyboardButton(
+                "+400",
+                callback_data=f"score_points_{user_id}_400",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-400",
+                callback_data=f"score_points_{user_id}_-400",
+                style="danger",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                "+300",
+                callback_data=f"score_points_{user_id}_300",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-300",
+                callback_data=f"score_points_{user_id}_-300",
+                style="danger",
+            ),
+            InlineKeyboardButton(
+                "+600",
+                callback_data=f"score_points_{user_id}_600",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-600",
+                callback_data=f"score_points_{user_id}_-600",
+                style="danger",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                "+400",
+                callback_data=f"score_points_{user_id}_400",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-400",
+                callback_data=f"score_points_{user_id}_-400",
+                style="danger",
+            ),
+            InlineKeyboardButton(
+                "+800",
+                callback_data=f"score_points_{user_id}_800",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-800",
+                callback_data=f"score_points_{user_id}_-800",
+                style="danger",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                "+500",
+                callback_data=f"score_points_{user_id}_500",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-500",
+                callback_data=f"score_points_{user_id}_-500",
+                style="danger",
+            ),
+            InlineKeyboardButton(
+                "+1000",
+                callback_data=f"score_points_{user_id}_1000",
+                style="success",
+            ),
+            InlineKeyboardButton(
+                "-1000",
+                callback_data=f"score_points_{user_id}_-1000",
+                style="danger",
             ),
         ],
         [InlineKeyboardButton("🔙 Back", callback_data="score_back")],
@@ -244,15 +322,10 @@ async def auto_reset_buzzer(context: ContextTypes.DEFAULT_TYPE):
         if job.chat_id not in SCORE_CHANGE_LOGS:
             SCORE_CHANGE_LOGS[job.chat_id] = deque(maxlen=MAX_CHANGE_LINES)
 
-        # Send scoreboard, including recent change lines if any
-        change_lines = list(SCORE_CHANGE_LOGS.get(job.chat_id, []))
-        if change_lines:
-            score_text = "\n".join(change_lines) + "\n\n🏆 **Scoreboard:**"
-        else:
-            score_text = "🏆 **Scoreboard:**"
+        # Start every new scoreboard with a clean change log
+        SCORE_CHANGE_LOGS[job.chat_id] = deque(maxlen=MAX_CHANGE_LINES)
 
-        # Remember previous scoreboard message (if any) so we can clear it
-        prev_score_msg = SCOREBOARD_MESSAGES.get(job.chat_id)
+        score_text = "🏆 **Scoreboard:**"
 
         sent_msg = await context.bot.send_message(
             chat_id=job.chat_id,
@@ -264,36 +337,6 @@ async def auto_reset_buzzer(context: ContextTypes.DEFAULT_TYPE):
         # Track the message id of the scoreboard we just sent
         SCOREBOARD_MESSAGES[job.chat_id] = sent_msg.message_id
 
-        # After sending this scoreboard, clear the recent change lines so they're
-        # shown only until the next scoreboard is sent.
-        try:
-            SCORE_CHANGE_LOGS[job.chat_id].clear()
-        except Exception:
-            SCORE_CHANGE_LOGS.pop(job.chat_id, None)
-
-        # Also edit the previous scoreboard message (if any) to remove stale change lines
-        if prev_score_msg and prev_score_msg != sent_msg.message_id:
-            try:
-                # Build a fresh scoreboard body (no change lines)
-                items = sorted(
-                    SCORES[job.chat_id].items(), key=lambda kv: kv[1], reverse=True
-                )
-                lines = ["🏆 **Scoreboard:**"]
-                for i, (uid, score_val) in enumerate(items, start=1):
-                    name = USER_NAMES.get(uid, f"User {uid}")
-                    lines.append(f"{i}. {name} ({score_val})")
-
-                await context.bot.edit_message_text(
-                    chat_id=job.chat_id,
-                    message_id=prev_score_msg,
-                    text="\n".join(lines),
-                    reply_markup=scoreboard_keyboard(job.chat_id),
-                    parse_mode="Markdown",
-                )
-            except Exception as e:
-                logger.debug(
-                    f"Could not clear previous scoreboard message {prev_score_msg}: {e}"
-                )
         logger.debug(f"Sent scoreboard for chat {job.chat_id}")
 
         # Update stats
